@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\User as UserMod;
 use App\Model\Shop as ShopMod;
 use App\Model\Product as ProdMod;
+use App\Http\Requests\UserRequest;
 
 class UsersController extends Controller
 {
@@ -101,9 +102,20 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, $id)
     {
-        return "UPDATE";
+        $request->validated();
+        $mod = UserMod::find($id);
+        $mod->name     = $request->name;
+        $mod->surname  = $request->surname;
+        //$mod->email    = $request->email;
+        $mod->mobile   = $request->mobile;
+        $mod->age      = $request->age;
+        $mod->address  = $request->address;
+        $mod->city     = $request->city;
+        $mod->save();
+        return redirect('admin/users')
+            ->with('success', 'User ['.$request->name.'] updated successfully.');
     }
 
     /**
@@ -114,6 +126,9 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $mod = UserMod::find($id);
+        UserMod::destroy($id);
+        return redirect('admin/user')
+            ->with('success', 'User ['.$mod->name.'] deleted successfully.');
     }
 }
